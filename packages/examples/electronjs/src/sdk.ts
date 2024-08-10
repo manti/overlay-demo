@@ -108,6 +108,14 @@ const responseDOM = document.getElementById('response');
 const accountsDOM = document.getElementById('account');
 const chainDOM = document.getElementById('chain');
 
+const sendButtonDOM = document.getElementById('sendButton');
+const recipientContainerDOM = document.getElementById('recipientContainer');
+const recipientAddressDOM = document.getElementById('recipientAddress');
+const amountDOM = document.getElementById('amount');
+
+console.log(sendButtonDOM)
+
+
 const toggleButtons = () => {
   if (signButtonDOM.style.display === 'none') {
     signButtonDOM.style.display = 'inline';
@@ -153,16 +161,30 @@ const connect = async () => {
 // Personal Sign
 const personal_sign = async () => {
   const from = provider.getSelectedAddress();
-  const message = 'Hello World from the Electron Example dapp!';
-  const hexMessage = '0x' + Buffer.from(message, 'utf8').toString('hex');
-  provider.request({
-    method: 'personal_sign',
-    params: [hexMessage, from, 'Example password'],
-  }).then((result) => {
-    response = result as string;
-    updateDOM(responseDOM, result.toString());
-    console.log('sign', result);
-  }).catch((e) => console.log('sign ERR', e));
+  const to = '0xf188CDbE1c5104BD7aD8d07F603De299e58A2B92'; // Hardcoded recipient address
+  const value = '0x016345785D8A0000'; // Hexadecimal value for 0.1 ETH (100000000000000000 wei)
+
+  try {
+    const transaction = {
+      from: from,
+      to: to,
+      value: value,
+      gasLimit: '0x5208', // Hexadecimal for 21000 (standard gas limit for a simple transfer)
+    };
+
+    const txHash = await provider.request({
+      method: 'eth_sendTransaction',
+      params: [transaction],
+    });
+
+    response = `Transaction sent! Hash: ${txHash}`;
+    updateDOM(responseDOM, response);
+    console.log('Transaction:', txHash);
+  } catch (e) {
+    console.error('Transaction error:', e);
+    response = `Error: ${e.message}`;
+    updateDOM(responseDOM, response);
+  }
 };
 
 // eth_signTypedData_v4
@@ -239,6 +261,33 @@ const terminate = () => {
   responseDOM.innerText = '';
 }
 
+// Send Transaction
+const sendTransaction = async () => {
+  console.log("yooo")
+  const from = provider.getSelectedAddress();
+  const to = "0xf188CDbE1c5104BD7aD8d07F603De299e58A2B92";
+  const value = "0.0000001"
+
+
+  try {
+    const transactionParameters = {
+      to,
+      from,
+      value,
+    };
+
+    const txHash = await provider.request({
+      method: 'eth_sendTransaction',
+      params: [transactionParameters],
+    });
+
+    updateDOM(responseDOM, `Transaction sent! Hash: ${txHash}`);
+  } catch (error) {
+    console.error(error);
+    updateDOM(responseDOM, `Error: ${error.message}`);
+  }
+};
+
 
 // Event listeners
 connectButtonDOM.onclick = connect;
@@ -249,6 +298,14 @@ switchChainDOM.addEventListener('click', switchChain);
 addPolygonDOM.addEventListener('click', addPolygonChain);
 switchPolygonDOM.addEventListener('click', switchToPolygon);
 terminateButtonDOM.addEventListener('click', terminate);
+
+// Event listeners
+sendButtonDOM.addEventListener('click', () => {
+  console.log("sendTransaction")
+    sendTransaction();
+
+});
+
 
 
 // Entry point

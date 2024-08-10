@@ -11,6 +11,7 @@
 <style>
   body {
     font-family: 'Roboto', sans-serif;
+    background-color:rgba(0, 0, 0, 0.01);
   }
   .container {
     text-align: center;
@@ -55,20 +56,35 @@
 <body>
 <div class="container">
   <img src="https://raw.githubusercontent.com/MetaMask/brand-resources/cb6fd847f3a9cc5e231c749383c3898935e62eab/SVG/metamask-fox-wordmark-horizontal.svg" width="450" alt=''/>
-  <h1>Electron Test Dapp</h1>
+  <h1>Test</h1>
 
   <div id="buttonContainers">
     <button class="button primary" id="connectButton">Connect</button>
     <button class="button action" id="personalSignButton">personal_sign</button>
+    <button class="button action" id="sendButton">Test</button>
+
     <button class="button action" id="signTypedDataButton">eth_signTypedData_v4</button>
     <button class="button action" id="switchChainButton">Toggle Chain</button>
     <button class="button action" id="addChainButton">Add Polygon</button>
     <button class="button action" id="switchPolygonButton">Switch to Polygon</button>
     <button class="button danger" id="terminateButton">Terminate</button>
+    <button class="button danger" id="sendButton">Terminate2</button>
+
   </div>
+  <button class="button action" id="sendButton">Send Transaction</button>
 
   <div id="accountContainer">
     <b>Account:</b><div id="account"></div>
+    <button class="button action" id="sendButton">Send Transaction</button>
+
+  </div>
+
+ 
+  
+  <!-- Add this input field for the recipient address -->
+  <div id="recipientContainer" style="margin-top: 20px; display: none;">
+    <input type="text" id="recipientAddress" placeholder="Recipient Address">
+    <input type="text" id="amount" placeholder="Amount in ETH">
   </div>
 
   <div id="chainContainer">
@@ -78,15 +94,48 @@
   <div id="responseContainer">
     <b>Response:</b><div id="response"></div>
   </div>
+  <button class="button action" id="sendButton">Send Transaction</button>
+
   <canvas id="qrCode"></canvas>
+  <button class="button action" id="sendButton">Send Transaction</button>
+
   <div id="otpContainer">
     <h1>OTP:</h1>
     <h1 id="otp"></h1>
   </div>
+  <button class="button action" id="sendButton">Send Transaction</button>
+
 </div>
 
 </body>
 <script>
   require('./dist/src/sdk.js')
+  let isDragging = false;
+    let startX, startY;
+
+    // document.body.addEventListener('mousedown', (e) => {
+    //   if (e.button === 0) {
+    //     isDragging = true;
+    //     startX = e.clientX;
+    //     startY = e.clientY;
+    //     window.electron.startDrag();
+    //   }
+    // });
+
+    document.body.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        window.electronDragStart(dx, dy);
+      }
+    });
+
+    document.body.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    window.electronDragStart = (dx, dy) => {
+      window.moveTo(window.screenX + dx, window.screenY + dy);
+    };
 </script>
 </html>
